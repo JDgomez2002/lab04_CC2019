@@ -2,40 +2,81 @@
 # Jose Daniel Gomez 21429
 # Gonzalo Santizo 21504
 
-def infix_to_postfix(expression):
-  # Diccionario para asignar precedencia a los operadores
-  precedence = {'*': 3, '+': 2, '|': 1}
-  
-  output = []  # Lista para almacenar la salida
-  stack = []   # Pila para almacenar los operadores
-  
-  for char in expression:
-    if char.isalpha():
-      # Si el carácter es una letra, se agrega directamente a la salida
-      output.append(char)
-    elif char == '(':
-      # Si el carácter es un paréntesis de apertura, se agrega a la pila
-      stack.append(char)
-    elif char == ')':
-      # Si el carácter es un paréntesis de cierre, se desapilan los operadores
-      # hasta encontrar el paréntesis de apertura correspondiente
-      while stack and stack[-1] != '(':
-        output.append(stack.pop())
-      stack.pop()  # Se elimina el paréntesis de apertura de la pila
-    elif char in precedence:
-      # Si el carácter es un operador, se desapilan los operadores de mayor
-      # o igual precedencia y se agregan a la salida
-      while stack and stack[-1] != '(' and precedence[char] <= precedence.get(stack[-1], 0):
-        output.append(stack.pop())
-      stack.append(char)  # Se agrega el operador a la pila
-  
-  # Se desapilan los operadores restantes y se agregan a la salida
-  while stack:
-    output.append(stack.pop())
-  
-  # Se devuelve la expresión en notación postfija como un string
-  return ''.join(output)
+class Nodo:
+    def __init__(self, valor):
+        self.valor = valor
+        self.izquierda = None
+        self.derecha = None
 
+def infix_to_postfix(expression):
+    precedence = {'*': 3, '+': 2, '|': 1}
+    
+    def is_operator(char):
+        return char in precedence or char in '()'
+
+    output = []
+    stack = []
+    
+    for char in expression:
+        if char.isalpha():
+            output.append(char)
+        elif char == '(':
+            stack.append(char)
+        elif char == ')':
+            while stack and stack[-1] != '(':
+                output.append(stack.pop())
+            stack.pop()
+        elif char in precedence:
+            while stack and stack[-1] != '(' and precedence[char] <= precedence.get(stack[-1], 0):
+                output.append(stack.pop())
+            stack.append(char)
+    
+    while stack:
+        output.append(stack.pop())
+
+    result = []
+
+    for item in output:
+        if item.isalpha():
+            result.insert(0, item)
+        else:
+            result.append(item)
+    
+    return ''.join(result)
+
+def construir_arbol(expresion_postfix):
+    pila = []
+
+    for caracter in expresion_postfix:
+        if caracter.isalpha():
+            nodo = Nodo(caracter)
+            pila.append(nodo)
+        else:
+            nodo = Nodo(caracter)
+            nodo.derecha = pila.pop()
+            nodo.izquierda = pila.pop()
+            pila.append(nodo)
+
+    return pila[-1]
+
+def imprimir_arbol(nodo, espaciado=0):
+  if nodo is None:
+    return
+  espaciado += 4
+  imprimir_arbol(nodo.derecha, espaciado)
+  if nodo.derecha is not None:
+    print(" " * (espaciado - 4) + "│", " │")
+  print(" " * (espaciado - 4) + "──", nodo.valor)
+  if nodo.izquierda is not None:
+    print(" " * (espaciado-1) + "│")
+  imprimir_arbol(nodo.izquierda, espaciado)
+
+#Infix to postfix example
 expression = '(a|b)*c+d'
 postfix = infix_to_postfix(expression)
 print(postfix)  # Salida: ab|c*d+
+
+# Ejemplo de uso
+expresion_postfix = "ABCDE+-*|"
+arbol = construir_arbol(expresion_postfix)
+imprimir_arbol(arbol)
