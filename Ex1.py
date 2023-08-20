@@ -213,10 +213,10 @@ imprimir_arbol(arbol)
 
 # Ejemplo de uso con el árbol generado anteriormente
 # arbol = construir_arbol("(a*|b*)+")
-afn = crear_afn(arbol)
+afn1 = crear_afn(arbol)
 
 # Crear el gráfico del AFN
-afn_grafico = crear_grafico_afn(afn)
+afn_grafico = crear_grafico_afn(afn1)
 if afn_grafico is not None:
     afn_grafico.format = 'jpg'
     afn_grafico.render('afn1', view=True)
@@ -234,10 +234,10 @@ imprimir_arbol(arbol)
 
 # Ejemplo de uso con el árbol generado anteriormente
 # arbol = construir_arbol("(a*|b*)+")
-afn = crear_afn(arbol)
+afn2 = crear_afn(arbol)
 
 # Crear el gráfico del AFN
-afn_grafico = crear_grafico_afn(afn)
+afn_grafico = crear_grafico_afn(afn2)
 if afn_grafico is not None:
     afn_grafico.format = 'jpg'
     afn_grafico.render('afn2', view=True)
@@ -255,10 +255,10 @@ imprimir_arbol(arbol)
 
 # Ejemplo de uso con el árbol generado anteriormente
 # arbol = construir_arbol("(a*|b*)+")
-afn = crear_afn(arbol)
+afn3 = crear_afn(arbol)
 
 # Crear el gráfico del AFN
-afn_grafico = crear_grafico_afn(afn)
+afn_grafico = crear_grafico_afn(afn3)
 if afn_grafico is not None:
     afn_grafico.format = 'jpg'
     afn_grafico.render('afn3', view=True)
@@ -276,10 +276,23 @@ imprimir_arbol(arbol)
 
 # Ejemplo de uso con el árbol generado anteriormente
 # arbol = construir_arbol("(a*|b*)+")
-afn = crear_afn(arbol)
+afn4 = crear_afn(arbol)
 
 # Crear el gráfico del AFN
-afn_grafico = crear_grafico_afn(afn)
+afn_grafico = crear_grafico_afn(afn4)
 if afn_grafico is not None:
     afn_grafico.format = 'jpg'
     afn_grafico.render('afn4', view=True)
+
+def verificar_cadena(cadena, afn):
+    if type(afn)!="NoneType":
+        estados_actuales = set([afn.estado_inicial])  # Conjunto de estados actuales
+        for simbolo in cadena:
+            estados_siguientes = set()  # Conjunto de estados siguientes
+            for estado in estados_actuales:
+                transiciones = afn.obtener_transiciones(estado, simbolo)
+                estados_siguientes.update(transiciones)
+            estados_actuales = estados_siguientes
+        return any(estado in afn.estados_finales for estado in estados_actuales)
+
+verificar_cadena("abbab", afn1)
